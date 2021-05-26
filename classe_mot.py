@@ -4,7 +4,7 @@ from random import choice
 
 class Mot_aléatoire:
     def __init__(self):
-        self.dt = pd.read_csv("Lexique 3.83\Lexique_modifié.csv", sep=";")
+        self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
 
     def mot(self):
         # Retourne un mot aléatoire sans critères de sélection.
@@ -46,10 +46,17 @@ class Mot_aléatoire:
         #retourne un mot aléatoire en fonction du nombre de syllabes. syll doit être
         # un int. syll est entre 1 et 9.
         liste_syllabes = []
+        liste = set(liste)  #en faisant cela, on double la vitesse de cette méthode, puisque
+                            #on n'a seulement besoin que de faire «in» (ligne 52).
         for i, j in enumerate(self.dt.orthographe):
             if j in liste and self.dt.nbsyll[i] == syll:
                     liste_syllabes += [self.dt.orthographe[i]]
         return liste_syllabes
+
+    def set_rareté(self):
+        # retourne un mot en fonction de sa rareté (à la fois dans les films et dans les livres).
+        pass
+        #TODO
 
     def set_all(self, catégorie, liste_premlettres, liste_nblettres, liste_syllabes=None):
         pass
@@ -101,4 +108,4 @@ class Mot_aléatoire:
         déterminants = self.set_categorie("ART")
         return choice(déterminants)
 
-print(Mot_aléatoire().nom(premlettre="b", nblettres=8, nbsyllabes=4))
+print(Mot_aléatoire().nom(nblettres=6, nbsyllabes=3))
