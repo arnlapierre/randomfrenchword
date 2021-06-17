@@ -6,10 +6,18 @@ class MotAléatoire:
 
     def __init__(self):
         self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
-        for i in self.dt.freqfilms:
-            i == int(i)
+
+    def afficher_catégories(self):
+        # Va toujours print :
+        # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
+        catégories = []
+        for i in self.dt.classe:
+            if str(i)[:3] not in catégories:
+                catégories.append(str(i)[:3])
+        return catégories[:10]
 
     def mot(self):
+        # TODO méthode caduque si j'utilise set_all. set_all avec aucun argument devient cette méthode
         # Retourne un mot aléatoire sans critères de sélection.
         return choice(self.dt.orthographe)
 
@@ -57,9 +65,10 @@ class MotAléatoire:
             rareté_livres_df = dataframe[dataframe.freqlivres < 0.05]
         return rareté_livres_df
 
-    def set_all(self, classe, *, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
-        # TODO trouver le problème quand je l'appelle pour une catégorie
-        df = self.set_categorie(classe)
+    def set_all(self, *, cat, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
+        # catégories :
+        # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
+        df = self.set_categorie(cat)
         if premlettre:
             df = self.set_premlettre(premlettre, df)
         if nblettres:
@@ -201,4 +210,4 @@ class MotAléatoire:
         return choice(list(déterminants.orthographe))
 
 
-print(MotAléatoire().onomatopée(rareté_livres=False))
+print(MotAléatoire().verbe(rareté_films=True))
