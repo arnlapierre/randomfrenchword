@@ -1,116 +1,204 @@
 import pandas as pd
 from random import choice
-import time
+
 
 class MotAléatoire:
 
     def __init__(self):
         self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
+        for i in self.dt.freqfilms:
+            i == int(i)
 
     def mot(self):
         # Retourne un mot aléatoire sans critères de sélection.
         return choice(self.dt.orthographe)
 
     def set_categorie(self, gram):
-        catégorie = [i for i in self.dt[self.dt["classe"] == gram].orthographe]
-        return catégorie
+        catégorie_df = self.dt[self.dt["classe"] == gram]
+        return catégorie_df
 
-    def set_categorie_2(self, gram):
-        # catégorie = [i for i in self.dt[self.dt["classe"] == gram].orthographe]
-        catégorie = self.dt[self.dt["classe"] == gram]
-        return catégorie
+    def set_premlettre(self, lettre, dataframe):
+        première_lettre_df = dataframe[dataframe.orthographe.str[:1] == lettre]
+        return première_lettre_df
 
-    def set_premlettre(self, lettre, liste):
-        #Méthode qui permet de définir comment restreindre les méthodes de
-        #Groupe grammaticales à une première lettre.
-        #Lettre doit être entre a et z en incluant les caractères accents.
-        liste_premlettre = []
-        for i in liste:
-            i = str(i)
-            if i[:1] == lettre:
-                liste_premlettre += [i]
-        return liste_premlettre
+    def set_nblettres(self, nb, dataframe):
+        # Détermine un mot en fonction du nb de lettres (entre 1 et 25 lettres).
+        nblettres_df = dataframe[dataframe.nblettres == nb]
+        return nblettres_df
 
-    def set_dtpremlettre(self, lettre, dataframe):
-        première_lettre = dataframe[dataframe.orthographe.str[:1] == lettre]
-        return première_lettre
+    def set_nbsyllabes(self, syl, dataframe):
+        # Détermine un mot en fonction du nb de syllabes (entre 1 et 9 syllabes).
+        nbsyllabes_df = dataframe[dataframe.nbsyll == syl]
+        return nbsyllabes_df
 
-    def set_nblettres(self, nb, liste):
-        #retourne un mot aléatoire en fonction du nombre de lettres. nb est
-        # un int entre 1 et 25.
-        liste_nblettres = []
-        for i in liste:
-            i = str(i)
-            if len(i) == nb:
-                liste_nblettres += [i]
-        return liste_nblettres
-
-    def set_nbsyllabes(self, syll, liste):
-        #retourne un mot aléatoire en fonction du nombre de syllabes. syll doit être
-        # un int. syll est entre 1 et 9.
-        liste_syllabes = []
-        liste = set(liste)  #en faisant cela, on double la vitesse de cette méthode, puisque
-                            #on n'a seulement besoin que de faire «in» (ligne 52).
-        for i, j in enumerate(self.dt.orthographe):
-            if j in liste and self.dt.nbsyll[i] == syll:
-                    liste_syllabes += [self.dt.orthographe[i]]
-        return liste_syllabes
-
-    def set_rareté(self):
-        # retourne un mot en fonction de sa rareté (à la fois dans les films et dans les livres).
+    def set_genre(self, genre, dataframe):
+        # TODO
         pass
-        #TODO
 
-    def set_all(self, catégorie, liste_premlettres, liste_nblettres, liste_syllabes=None):
+    def set_nombre(self, nombre, dataframe):
+        # TODO
         pass
-        #TODO
 
-    def nom(self, *, premlettre=None, nblettres=None, nbsyllabes=None):
+    def set_rare_films(self, rareté, dataframe):
+        # TODO ajuster la rareté avec un quelconque barême.
+        # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
+        if rareté is False:
+            rareté_films_df = dataframe[dataframe.freqfilms > 1]
+        if rareté is True:
+            rareté_films_df = dataframe[dataframe.freqfilms < 0.05]
+        return rareté_films_df
+
+    def set_rare_livres(self, rareté, dataframe):
+        # TODO ajuster la rareté avec un quelconque barême.
+        # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
+        if rareté is False:
+            rareté_livres_df = dataframe[dataframe.freqlivres > 1]
+        if rareté is True:
+            rareté_livres_df = dataframe[dataframe.freqlivres < 0.05]
+        return rareté_livres_df
+
+    def set_all(self, classe, *, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
+        # TODO trouver le problème quand je l'appelle pour une catégorie
+        df = self.set_categorie(classe)
+        if premlettre:
+            df = self.set_premlettre(premlettre, df)
+        if nblettres:
+            df = self.set_nblettres(nblettres, df)
+        if nbsyllabes:
+            df = self.set_nbsyllabes(nbsyllabes, df)
+        if rareté is not None:
+            df = self.set_rare_films(rareté, df)
+        return choice(list(df.orthographe))
+
+    def nom(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+            rareté_films=None, rareté_livres=None):
         noms = self.set_categorie("NOM")
-        #TODO travailler avec des dataframe plutôt que des listes?
-        # préférable pour syllabe et fréquence...
         if premlettre:
             noms = self.set_premlettre(premlettre, noms)
         if nblettres:
             noms = self.set_nblettres(nblettres, noms)
         if nbsyllabes:
             noms = self.set_nbsyllabes(nbsyllabes, noms)
-        return choice(noms)
+        if rareté_films is not None:
+            noms = self.set_rare_films(rareté_films, noms)
+        if rareté_livres is not None:
+            noms = self.set_rare_livres(rareté_livres, noms)
+        return choice(list(noms.orthographe))
 
-    def adjectif(self):
+    def adjectif(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+            rareté_films=None, rareté_livres=None):
         adjectifs = self.set_categorie("ADJ")
-        return choice(adjectifs)
+        if premlettre:
+            adjectifs = self.set_premlettre(premlettre, adjectifs)
+        if nblettres:
+            adjectifs = self.set_nblettres(nblettres, adjectifs)
+        if nbsyllabes:
+            adjectifs = self.set_nbsyllabes(nbsyllabes, adjectifs)
+        if rareté_films is not None:
+            adjectifs = self.set_rare_films(rareté_films, adjectifs)
+        if rareté_livres is not None:
+            adjectifs = self.set_rare_livres(rareté_livres, adjectifs)
+        return choice(list(adjectifs.orthographe))
 
-    def verbe(self):
+    def verbe(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+        rareté_films=None, rareté_livres=None):
         verbes = self.set_categorie("VER")
-        return choice(verbes)
+        if premlettre:
+            verbes = self.set_premlettre(premlettre, verbes)
+        if nblettres:
+            verbes = self.set_nblettres(nblettres, verbes)
+        if nbsyllabes:
+            verbes = self.set_nbsyllabes(nbsyllabes, verbes)
+        if rareté_films is not None:
+            verbes = self.set_rare_films(rareté_films, verbes)
+        if rareté_livres is not None:
+            verbes = self.set_rare_livres(rareté_livres, verbes)
+        return choice(list(verbes.orthographe))
 
-    def auxiliaire(self):
+    def auxiliaire(self, *, premlettre=None, rareté_films=None, rareté_livres=None):
         auxiliaires = self.set_categorie("AUX")
-        return choice(auxiliaires)
+        if premlettre:
+            auxiliaires = self.set_premlettre(premlettre, auxiliaires)
+        if rareté_films is not None:
+            auxiliaires = self.set_rare_films(rareté_films, auxiliaires)
+        if rareté_livres is not None:
+            auxiliaires = self.set_rare_livres(rareté_livres, auxiliaires)
+        return choice(list(auxiliaires.orthographe))
 
-    def préposition(self):
+    def préposition(self, *, premlettre=None, rareté_films=None, rareté_livres=None):
         prépositions = self.set_categorie("PRE")
-        return choice(prépositions)
+        if premlettre:
+            prépositions = self.set_premlettre(premlettre, prépositions)
+        if rareté_films is not None:
+            prépositions = self.set_rare_films(rareté_films, prépositions)
+        if rareté_livres is not None:
+            prépositions = self.set_rare_livres(rareté_livres, prépositions)
+        return choice(list(prépositions.orthographe))
 
-    def adverbe(self):
+    def adverbe(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+            rareté_films=None, rareté_livres=None):
         adverbes = self.set_categorie("ADV")
-        return choice(adverbes)
+        if premlettre:
+            adverbes = self.set_premlettre(premlettre, adverbes)
+        if nblettres:
+            adverbes = self.set_nblettres(nblettres, adverbes)
+        if nbsyllabes:
+            adverbes = self.set_nbsyllabes(nbsyllabes, adverbes)
+        if rareté_films is not None:
+            adverbes = self.set_rare_films(rareté_films, adverbes)
+        if rareté_livres is not None:
+            adverbes = self.set_rare_livres(rareté_livres, adverbes)
+        return choice(list(adverbes.orthographe))
 
-    def conjonction(self):
+    def conjonction(self, *, premlettre=None, rareté_films=None, rareté_livres=None):
         conjonctions = self.set_categorie("CON")
-        return choice(conjonctions)
+        if premlettre:
+            conjonctions = self.set_premlettre(premlettre, conjonctions)
+        if rareté_films is not None:
+            conjonctions = self.set_rare_films(rareté_films, conjonctions)
+        if rareté_livres is not None:
+            conjonctions = self.set_rare_livres(rareté_livres, conjonctions)
+        return choice(list(conjonctions.orthographe))
 
-    def onomatopée(self):
+    def onomatopée(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+            rareté_films=None, rareté_livres=None):
         onomatopées = self.set_categorie("ONO")
-        return choice(onomatopées)
+        if premlettre:
+            onomatopées = self.set_premlettre(premlettre, onomatopées)
+        if nblettres:
+            onomatopées = self.set_nblettres(nblettres, onomatopées)
+        if nbsyllabes:
+            onomatopées = self.set_nbsyllabes(nbsyllabes, onomatopées)
+        if rareté_films is not None:
+            onomatopées = self.set_rare_films(rareté_films, onomatopées)
+        if rareté_livres is not None:
+            onomatopées = self.set_rare_livres(rareté_livres, onomatopées)
+        return choice(list(onomatopées.orthographe))
 
-    def pronom(self):
+    def pronom(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
+            rareté_films=None, rareté_livres=None):
         pronoms = self.set_categorie("PRO")
-        return choice(pronoms)
+        if premlettre:
+            pronoms = self.set_premlettre(premlettre, pronoms)
+        if nblettres:
+            pronoms = self.set_nblettres(nblettres, pronoms)
+        if nbsyllabes:
+            pronoms = self.set_nbsyllabes(nbsyllabes, pronoms)
+        if rareté_films is not None:
+            pronoms = self.set_rare_films(rareté_films, pronoms)
+        if rareté_livres is not None:
+            pronoms = self.set_rare_livres(rareté_livres, pronoms)
+        return choice(list(pronoms.orthographe))
 
-    def déterminant(self):
+    def déterminant(self, *, premlettre=None, rareté_films=None, rareté_livres=None):
         déterminants = self.set_categorie("ART")
-        return choice(déterminants)
+        if premlettre:
+            déterminants = self.set_premlettre(premlettre, déterminants)
+        if rareté_films is not None:
+            déterminants = self.set_rare_films(rareté_films, déterminants)
+        if rareté_livres is not None:
+            déterminants = self.set_rare_livres(rareté_livres, déterminants)
+        return choice(list(déterminants.orthographe))
 
-print(MotAléatoire().nom(premlettre = "a"))
+
+print(MotAléatoire().onomatopée(rareté_livres=False))
