@@ -1,28 +1,27 @@
 import pandas as pd
 from random import choice
+import time
 
+class MotAléatoire:
 
-class Mot_aléatoire:
     def __init__(self):
         self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
 
     def mot(self):
         # Retourne un mot aléatoire sans critères de sélection.
-        mots = []
-        for i in self.dt.orthographe:
-            mots += [i]
-        return choice(mots)
+        return choice(self.dt.orthographe)
 
     def set_categorie(self, gram):
-        catégorie = []
-        for i, j in enumerate(self.dt.classe):
-            j = str(j)
-            if j[0:3] == gram:
-                catégorie += [self.dt.orthographe[i]]
+        catégorie = [i for i in self.dt[self.dt["classe"] == gram].orthographe]
+        return catégorie
+
+    def set_categorie_2(self, gram):
+        # catégorie = [i for i in self.dt[self.dt["classe"] == gram].orthographe]
+        catégorie = self.dt[self.dt["classe"] == gram]
         return catégorie
 
     def set_premlettre(self, lettre, liste):
-        #Méthode qui permet de définir comment restraindre les méthodes de
+        #Méthode qui permet de définir comment restreindre les méthodes de
         #Groupe grammaticales à une première lettre.
         #Lettre doit être entre a et z en incluant les caractères accents.
         liste_premlettre = []
@@ -31,6 +30,10 @@ class Mot_aléatoire:
             if i[:1] == lettre:
                 liste_premlettre += [i]
         return liste_premlettre
+
+    def set_dtpremlettre(self, lettre, dataframe):
+        première_lettre = dataframe[dataframe.orthographe.str[:1] == lettre]
+        return première_lettre
 
     def set_nblettres(self, nb, liste):
         #retourne un mot aléatoire en fonction du nombre de lettres. nb est
@@ -64,6 +67,8 @@ class Mot_aléatoire:
 
     def nom(self, *, premlettre=None, nblettres=None, nbsyllabes=None):
         noms = self.set_categorie("NOM")
+        #TODO travailler avec des dataframe plutôt que des listes?
+        # préférable pour syllabe et fréquence...
         if premlettre:
             noms = self.set_premlettre(premlettre, noms)
         if nblettres:
@@ -108,4 +113,4 @@ class Mot_aléatoire:
         déterminants = self.set_categorie("ART")
         return choice(déterminants)
 
-print(Mot_aléatoire().nom(nblettres=6, nbsyllabes=3))
+print(MotAléatoire().nom(premlettre = "a"))
