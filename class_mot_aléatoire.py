@@ -8,7 +8,7 @@ class MotAléatoire:
         self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
 
     def afficher_catégories(self):
-        # Va toujours print :
+        # Retourne :
         # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
         catégories = []
         for i in self.dt.classe:
@@ -77,6 +77,8 @@ class MotAléatoire:
             df = self.set_nbsyllabes(nbsyllabes, df)
         if rareté is not None:
             df = self.set_rare_films(rareté, df)
+        if len(df) == 0:
+            return "Aucun mot ne correspond à ces critères de recherche."
         return choice(list(df.orthographe))
 
     def nom(self, *, premlettre=None, nblettres=None, nbsyllabes=None,
