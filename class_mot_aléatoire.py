@@ -68,7 +68,10 @@ class MotAléatoire:
     def set_all(self, *, cat, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
         # catégories :
         # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
-        df = self.set_categorie(cat)
+        if cat:
+            df = self.set_categorie(cat)
+        else:
+            df = self.dt["orthographe"]
         if premlettre:
             df = self.set_premlettre(premlettre, df)
         if nblettres:
