@@ -22,7 +22,7 @@ class MotAléatoire:
         return choice(self.dt.orthographe)
 
     def set_categorie(self, gram):
-        catégorie_df = self.dt[self.dt["classe"] == gram]
+        catégorie_df = self.dt[self.dt["classe"].str[0:3] == gram]
         return catégorie_df
 
     def set_premlettre(self, lettre, dataframe):
@@ -65,13 +65,13 @@ class MotAléatoire:
             rareté_livres_df = dataframe[dataframe.freqlivres < 0.05]
         return rareté_livres_df
 
-    def set_all(self, *, cat, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
+    def set_all(self, *, cat=None, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
         # catégories :
         # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
         if cat:
             df = self.set_categorie(cat)
         else:
-            df = self.dt["orthographe"]
+            df = self.dt
         if premlettre:
             df = self.set_premlettre(premlettre, df)
         if nblettres:
@@ -213,6 +213,3 @@ class MotAléatoire:
         if rareté_livres is not None:
             déterminants = self.set_rare_livres(rareté_livres, déterminants)
         return choice(list(déterminants.orthographe))
-
-
-print(MotAléatoire().verbe(rareté_films=True))
