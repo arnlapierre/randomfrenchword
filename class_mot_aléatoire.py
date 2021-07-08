@@ -16,11 +16,6 @@ class MotAléatoire:
                 catégories.append(str(i)[:3])
         return catégories[:10]
 
-    def mot(self):
-        # TODO méthode caduque si j'utilise set_all. set_all avec aucun argument devient cette méthode
-        # Retourne un mot aléatoire sans critères de sélection.
-        return choice(self.dt.orthographe)
-
     def set_categorie(self, gram):
         catégorie_df = self.dt[self.dt["classe"].str[0:3] == gram]
         return catégorie_df
@@ -47,16 +42,16 @@ class MotAléatoire:
         # TODO
         pass
 
-    def set_rare_films(self, rareté, dataframe):
+    def set_rarete_films(self, rareté, dataframe):
         # TODO ajuster la rareté avec un quelconque barême.
         # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
         if rareté is False:
-            rareté_films_df = dataframe[dataframe.freqfilms > 1]
+            rareté_films_df = dataframe[dataframe.freqfilms > 5]
         if rareté is True:
-            rareté_films_df = dataframe[dataframe.freqfilms < 0.05]
+            rareté_films_df = dataframe[dataframe.freqfilms < 0.02]
         return rareté_films_df
 
-    def set_rare_livres(self, rareté, dataframe):
+    def set_rarete_livres(self, rareté, dataframe):
         # TODO ajuster la rareté avec un quelconque barême.
         # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
         if rareté is False:
@@ -79,7 +74,7 @@ class MotAléatoire:
         if nbsyllabes:
             df = self.set_nbsyllabes(nbsyllabes, df)
         if rareté is not None:
-            df = self.set_rare_films(rareté, df)
+            df = self.set_rarete_films(rareté, df)
         if len(df) == 0:
             return "Aucun mot ne correspond à ces critères de recherche."
         return choice(list(df.orthographe))
