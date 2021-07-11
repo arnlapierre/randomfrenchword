@@ -1,5 +1,5 @@
 from tkinter import *
-from class_mot_aléatoire import MotAléatoire
+from class_mot_aléatoire import MotAleatoire
 
 # Paramètres de la fenêtre
 window = Tk()
@@ -49,7 +49,7 @@ def generer_mot():
     if radio_rarete.get() == 2:
         freq_lt_var = 0.02
 
-    affichage.config(text=MotAléatoire().set_all(cat=cat_var, nblettres=nb_lettres_var,
+    affichage.config(text=MotAleatoire().set_all(cat=cat_var, nblettres=nb_lettres_var,
                                                  premlettre=prem_lettre_var,
                                                  nbsyllabes=nb_syllabes_var,
                                                  freq_ut=freq_ut_var,
@@ -94,11 +94,9 @@ checkbutton_1st_lettre = Checkbutton(text="Première lettre", variable=check_1st
 checkbutton_1st_lettre.grid(row=1, column=3, padx=6, pady=3)
 
 # Fréquence
-
 # Fréquence Label
 freq_label = Label(text="Options de fréquence")
 freq_label.grid(row=3, column=0, columnspan=2, sticky="sw", pady=8)
-
 
 # Scale "upper than"
 freq_upper_than_spin = Spinbox(from_=0.00, to=1000, width=10, bg="white", relief="ridge")
@@ -116,14 +114,15 @@ check_freq_lt = IntVar()
 checkbutton_freq_lt = Checkbutton(text="Moins que : ", variable=check_freq_lt, bg="white", relief="ridge")
 checkbutton_freq_lt.grid(row=5, column=1, padx=3, pady=3)
 
-
 # Rareté avec radiobutton
-
 radio_rarete = IntVar()
+
 rarete_radio_frequent = Radiobutton(text="Mot fréquent", value=1, variable=radio_rarete)
 rarete_radio_frequent.grid(row=4, column=2, padx=6, pady=6)
+
 rarete_radio_rare = Radiobutton(text="Mot rare", value=2, variable=radio_rarete)
 rarete_radio_rare.grid(row=4, column=3, sticky="w", padx=6)
+
 rarete_radio_intervalle = Radiobutton(text="Ajuster manuellement l'intervalle", value=3, variable=radio_rarete)
 rarete_radio_intervalle.grid(row=4, column=0, columnspan=2, sticky="w", padx=6)
 
