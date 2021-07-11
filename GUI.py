@@ -14,56 +14,40 @@ affichage.grid(row=0, column=0, columnspan=3, pady=3, sticky="w")
 
 # Button
 def generer_mot():
+    # variables
+    (freq_ut_var, freq_lt_var, cat_var, nb_lettres_var,
+     nb_syllabes_var, prem_lettre_var) = (None, None, None, None, None, None)
+
     # Catégorie
     if check_classe.get() == 1:
         cat_var = categorie_entry.get()
-    else:
-        cat_var = None
 
     # Nb lettres
     if check_nblettres.get() == 1:
         nb_lettres_var = int(spinbox_nblettres.get())
-    else:
-        nb_lettres_var = None
 
     # Nb syllabes
     if check_nb_syllabes.get() == 1:
         nb_syllabes_var = int(spinbox_nbsyllabes.get())
-    else:
-        nb_syllabes_var = None
 
     # Première lettre
     if check_1st_lettre.get() == 1:
         prem_lettre_var = prem_lettre_entry.get()
-    else:
-        prem_lettre_var = None
 
     # Fréquence aux bornes
-    if radio_rarete.get() == 3 and (check_freq_ut.get() == 1 or check_freq_lt.get() == 1):
+    if radio_rarete.get() == 3:
         if check_freq_ut.get() == 1:
             freq_ut_var = freq_upper_than_spin.get()
-        else:
-            freq_ut_var = None
         if check_freq_lt.get() == 1:
             freq_lt_var = freq_lower_than_spin.get()
-        else:
-            freq_lt_var = None
 
-    # Cas ou le radio est sélectionné, mais pas les checkbox
-    if radio_rarete.get() == 3 and (check_freq_ut.get(), check_freq_lt.get()) == (0, 0):
-        freq_ut_var = None
-        freq_lt_var = None
-
-    # Rareté
-    # Mot fréquent
+    # Radio pour mot fréquent
     if radio_rarete.get() == 1:
         freq_ut_var = 10
-        freq_lt_var = None
 
-    # Mot rare
+    # Radio pour mot rare
     if radio_rarete.get() == 2:
         freq_lt_var = 0.02
-        freq_ut_var = None
 
     affichage.config(text=MotAléatoire().set_all(cat=cat_var, nblettres=nb_lettres_var,
                                                  premlettre=prem_lettre_var,
