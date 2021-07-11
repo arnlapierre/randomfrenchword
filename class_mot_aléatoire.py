@@ -2,7 +2,7 @@ import pandas as pd
 from random import choice
 
 
-class MotAléatoire:
+class MotAleatoire:
 
     def __init__(self):
         self.dt = pd.read_csv("Lexique_modifié.csv", sep=";")
@@ -41,22 +41,6 @@ class MotAléatoire:
     def set_nombre(self, nombre, dataframe):
         # TODO
         pass
-
-    def set_rarete_films_bool(self, rarete, dataframe):
-        # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
-        if rarete is False:
-            rarete_films_df = dataframe[dataframe.freqfilms > 5]
-        if rarete is True:
-            rarete_films_df = dataframe[dataframe.freqfilms < 0.02]
-        return rarete_films_df
-
-    def set_rarete_livres_bool(self, rarete, dataframe):
-        # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
-        if rarete is False:
-            rarete_livres_df = dataframe[dataframe.freqlivres > 5]
-        if rarete is True:
-            rarete_livres_df = dataframe[dataframe.freqlivres < 0.02]
-        return rarete_livres_df
 
     def freq_films_greater_than(self, freq, dataframe):
         rarete_films_df = dataframe[dataframe.freqfilms >= float(freq)]
