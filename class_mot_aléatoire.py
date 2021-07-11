@@ -42,25 +42,32 @@ class MotAléatoire:
         # TODO
         pass
 
-    def set_rarete_films(self, rareté, dataframe):
-        # TODO ajuster la rareté avec un quelconque barême.
+    def set_rarete_films_bool(self, rarete, dataframe):
         # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
-        if rareté is False:
-            rareté_films_df = dataframe[dataframe.freqfilms > 5]
-        if rareté is True:
-            rareté_films_df = dataframe[dataframe.freqfilms < 0.02]
-        return rareté_films_df
+        if rarete is False:
+            rarete_films_df = dataframe[dataframe.freqfilms > 5]
+        if rarete is True:
+            rarete_films_df = dataframe[dataframe.freqfilms < 0.02]
+        return rarete_films_df
 
-    def set_rarete_livres(self, rareté, dataframe):
-        # TODO ajuster la rareté avec un quelconque barême.
+    def set_rarete_livres_bool(self, rarete, dataframe):
         # BOOL. Retourne un mot rare à partir de la fréquence dans les scénarios de films.
-        if rareté is False:
-            rareté_livres_df = dataframe[dataframe.freqlivres > 1]
-        if rareté is True:
-            rareté_livres_df = dataframe[dataframe.freqlivres < 0.05]
-        return rareté_livres_df
+        if rarete is False:
+            rarete_livres_df = dataframe[dataframe.freqlivres > 5]
+        if rarete is True:
+            rarete_livres_df = dataframe[dataframe.freqlivres < 0.02]
+        return rarete_livres_df
 
-    def set_all(self, *, cat=None, premlettre=None, nblettres=None, nbsyllabes=None, rareté=None):
+    def freq_films_greater_than(self, freq, dataframe):
+        rarete_films_df = dataframe[dataframe.freqfilms >= float(freq)]
+        return rarete_films_df
+
+    def freq_films_lower_than(self, freq, dataframe):
+        rarete_films_df = dataframe[dataframe.freqfilms <= float(freq)]
+        return rarete_films_df
+
+    def set_all(self, *, cat=None, premlettre=None, nblettres=None,
+                nbsyllabes=None, freq_lt=None, freq_ut=None):
         # catégories :
         # ['NOM', 'AUX', 'VER', 'ADV', 'PRE', 'ADJ', 'ONO', 'CON', 'ART', 'PRO']
         if cat:
@@ -73,8 +80,12 @@ class MotAléatoire:
             df = self.set_nblettres(nblettres, df)
         if nbsyllabes:
             df = self.set_nbsyllabes(nbsyllabes, df)
-        if rareté is not None:
-            df = self.set_rarete_films(rareté, df)
+        if freq_lt or freq_ut:
+            if freq_ut:
+                df = self.freq_films_greater_than(freq_ut, df)
+            if freq_lt:
+                df = self.freq_films_lower_than(freq_lt, df)
+
         if len(df) == 0:
             return "Aucun mot ne correspond à ces critères de recherche."
         return choice(list(df.orthographe))

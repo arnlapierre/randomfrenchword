@@ -4,7 +4,7 @@ from class_mot_aléatoire import MotAléatoire
 # Paramètres de la fenêtre
 window = Tk()
 window.title("Générateur aléatoire de mots")
-window.geometry("630x220")
+window.geometry("500x320")
 window.config(padx=40, pady=40, bg="deep sky blue")
 
 # Label pour afficher le mot
@@ -38,24 +38,43 @@ def generer_mot():
     else:
         prem_lettre_var = None
 
+    # Fréquence aux bornes
+    if radio_rarete.get() == 3 and (check_freq_ut.get() == 1 or check_freq_lt.get() == 1):
+        if check_freq_ut.get() == 1:
+            freq_ut_var = freq_upper_than_spin.get()
+        else:
+            freq_ut_var = None
+        if check_freq_lt.get() == 1:
+            freq_lt_var = freq_lower_than_spin.get()
+        else:
+            freq_lt_var = None
+
+    # Cas ou le radio est sélectionné, mais pas les checkbox
+    if radio_rarete.get() == 3 and (check_freq_ut.get(), check_freq_lt.get()) == (0, 0):
+        freq_ut_var = None
+        freq_lt_var = None
+
     # Rareté
-    if check_rarete_2.get() == 1:
-        if radio_rarete.get() == 1:
-            rarete_radio_var = False
-        if radio_rarete.get() == 2:
-            rarete_radio_var = True
-    else:
-        rarete_radio_var = None
+    # Mot fréquent
+    if radio_rarete.get() == 1:
+        freq_ut_var = 10
+        freq_lt_var = None
+
+    # Mot rare
+    if radio_rarete.get() == 2:
+        freq_lt_var = 0.02
+        freq_ut_var = None
 
     affichage.config(text=MotAléatoire().set_all(cat=cat_var, nblettres=nb_lettres_var,
                                                  premlettre=prem_lettre_var,
                                                  nbsyllabes=nb_syllabes_var,
-                                                 rareté=rarete_radio_var))
+                                                 freq_ut=freq_ut_var,
+                                                 freq_lt=freq_lt_var))
 
 
 # Button
 generer = Button(text="Générer", command=generer_mot, bg="white")
-generer.grid(row=4, column=2, padx=3, pady=3)
+generer.grid(row=7, column=1, padx=3, pady=3)
 
 # Catégorie
 # TODO Combobox
@@ -90,26 +109,38 @@ check_1st_lettre = IntVar()
 checkbutton_1st_lettre = Checkbutton(text="Première lettre", variable=check_1st_lettre, bg="white", relief="ridge")
 checkbutton_1st_lettre.grid(row=1, column=3, padx=6, pady=3)
 
-# Rareté avec scale
+# Fréquence
 
-rarete_scale = Scale(from_=0, to=10, resolution=0.01, bg="white", troughcolor="white", relief="ridge",
-                     orient=HORIZONTAL, length=100, sliderlength=8)
-rarete_scale.grid(row=2, rowspan=2, column=4, padx=3, pady=9, sticky="n")
+# Fréquence Label
+freq_label = Label(text="Options de fréquence")
+freq_label.grid(row=3, column=0, columnspan=2, sticky="sw", pady=8)
 
-check_rarete_1 = IntVar()
-checkbutton_rarete_1 = Checkbutton(text="Rareté précis", variable=check_rarete_1, bg="white", relief="ridge")
-checkbutton_rarete_1.grid(row=1, column=4, padx=3, pady=3)
+
+# Scale "upper than"
+freq_upper_than_spin = Spinbox(from_=0.00, to=1000, width=10, bg="white", relief="ridge")
+freq_upper_than_spin.grid(row=6, column=0, padx=3, pady=9)
+
+check_freq_ut = IntVar()
+checkbutton_freq_ut = Checkbutton(text="Plus que : ", variable=check_freq_ut, bg="white", relief="ridge")
+checkbutton_freq_ut.grid(row=5, column=0, padx=3, pady=3)
+
+# Scale "lower than"
+freq_lower_than_spin = Spinbox(from_=0.00, to=1000, width=10, bg="white", relief="ridge")
+freq_lower_than_spin.grid(row=6, column=1, padx=3, pady=9)
+
+check_freq_lt = IntVar()
+checkbutton_freq_lt = Checkbutton(text="Moins que : ", variable=check_freq_lt, bg="white", relief="ridge")
+checkbutton_freq_lt.grid(row=5, column=1, padx=3, pady=3)
+
 
 # Rareté avec radiobutton
 
-check_rarete_2 = IntVar()
-checkbutton_rarete_2 = Checkbutton(text="Rareté", variable=check_rarete_2, bg="white", relief="ridge")
-checkbutton_rarete_2.grid(row=1, column=5, padx=3, pady=3)
-
 radio_rarete = IntVar()
 rarete_radio_frequent = Radiobutton(text="Mot fréquent", value=1, variable=radio_rarete)
-rarete_radio_frequent.grid(row=2, column=5, padx=6, pady=6)
+rarete_radio_frequent.grid(row=4, column=2, padx=6, pady=6)
 rarete_radio_rare = Radiobutton(text="Mot rare", value=2, variable=radio_rarete)
-rarete_radio_rare.grid(row=3, column=5, sticky="w", padx=6)
+rarete_radio_rare.grid(row=4, column=3, sticky="w", padx=6)
+rarete_radio_intervalle = Radiobutton(text="Ajuster manuellement l'intervalle", value=3, variable=radio_rarete)
+rarete_radio_intervalle.grid(row=4, column=0, columnspan=2, sticky="w", padx=6)
 
 window.mainloop()
